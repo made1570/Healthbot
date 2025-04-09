@@ -4,6 +4,8 @@ const handlebars = require("express-handlebars");
 const Handlebars = require('handlebars');
 const path = require('path');
 const bodyParser = require('body-parser');
+const axios = require('axios');
+
 
 const hbs = handlebars.create({
     extname: 'hbs',
@@ -32,14 +34,24 @@ app.get("/chat", (req, res) => {
 });
 
 // placeholder chatbot Response Route
-app.post("/chat", (req, res) => {
+app.post("/chat", async (req, res) => {
     const userMessage = req.body.message;
-    
 
-    const botReply = `You said: ${userMessage}`;
-    
-    res.json({ reply: botReply });
+    try {
+        // Call the Flask server
+        const response = await axios.post('http://127.0.0.1:5000/predict', {
+            message: userMessage
+        });
+
+        const botReply = response.data.reply;
+        res.json({ reply: botReply });
+
+    } catch (error) {
+        console.error('Error connecting to Python server:', error.message);
+        res.status(500).json({ reply: "Oops! Something went wrong." });
+    }
 });
+
 
 app.get("/people", (req, res) => {
     res.render("people", { title: "Team" });
