@@ -13,8 +13,9 @@
     "npm-run-all": "^4.1.5"
   },
   "scripts": {
-    "prestart": "npm run install-python && npm install",
-    "install-python": "pip3 install -r requirements.txt", 
+    "prestart": "npm run install-python && npm run install-python2 && npm install",
+    "install-python": "apt install python3-Flask", 
+    "install-python2": "apt install python3-joblib", 
     "start": "./start.sh",
     "postinstall": "chmod +x start.sh"
   }
