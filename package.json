@@ -13,10 +13,8 @@
     "npm-run-all": "^4.1.5"
   },
   "scripts": {
-    "prestart": "npm run install-python && npm run install-python2 && npm install",
-    "install-python": "sudo apt install python3-Flask", 
-    "install-python2": "sudo apt install python3-joblib", 
-    "start": "./start.sh",
-    "postinstall": "chmod +x start.sh"
+    "prestart": "npm install",
+    "start": "npm start"
   }
 }
+
