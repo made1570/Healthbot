@@ -41,31 +41,41 @@ app.post("/chat", async (req, res) => {
 
     try {
         const response = await axios.post(
-            "https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta",
+            "https://api.friendli.ai/dedicated/v1/completions",
             {
-                inputs: userMessage,
-                parameters: {
-                    max_new_tokens: 200,
-                    temperature: 0.7,
-                    do_sample: true
-                }
+                model: process.env.ENDPOINT_ID,
+                prompt: userMessage,
+                min_tokens: 20,
+                max_tokens: 100,
+                top_k: 32,
+                top_p: 0.8,
+                n: 1,
+                no_repeat_ngram: 3,
+                ngram_repetition_penalty: 1.75
             },
             {
                 headers: {
-                    Authorization: `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
+                    "Authorization": `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
                     "Content-Type": "application/json"
                 }
             }
         );
 
-        const botReply = response.data.generated_text || response.data[0]?.generated_text;
+        const botReply = response.data.choices?.[0]?.text?.trim() || "No reply.";
         res.json({ reply: botReply });
 
     } catch (error) {
         console.error("Error calling Gemma API:", error.message);
-        res.status(500).json({ reply: "Something went wrong with the model." });
+
+        if (error.response) {
+            console.error("Status:", error.response.status);
+            console.error("Data:", error.response.data);
+        }
+
+        res.status(500).json({ reply: "Something went wrong talking to the Gemma model." });
     }
 });
+
 
 
 app.get("/people", (req, res) => {
