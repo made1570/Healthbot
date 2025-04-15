@@ -34,21 +34,36 @@ app.get("/chat", (req, res) => {
 });
 
 // placeholder chatbot Response Route
+require('dotenv').config();
+
 app.post("/chat", async (req, res) => {
     const userMessage = req.body.message;
 
     try {
-        // Call the Flask server
-        const response = await axios.post('https:/mlserver-mp8n.onrender.com/predict', {
-            message: userMessage
-        });
+        const response = await axios.post(
+            "https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta",
+            {
+                inputs: userMessage,
+                parameters: {
+                    max_new_tokens: 200,
+                    temperature: 0.7,
+                    do_sample: true
+                }
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
+                    "Content-Type": "application/json"
+                }
+            }
+        );
 
-        const botReply = response.data.reply;
+        const botReply = response.data.generated_text || response.data[0]?.generated_text;
         res.json({ reply: botReply });
 
     } catch (error) {
-        console.error('Error connecting to Python server:', error.message);
-        res.status(500).json({ reply: "Oops! Something went wrong." });
+        console.error("Error calling Gemma API:", error.message);
+        res.status(500).json({ reply: "Something went wrong with the model." });
     }
 });
 
