@@ -34,6 +34,9 @@
                 style="flex: 1; padding: 10px; font-size: 16px; font-family:'DynaPuff'; border-radius: 5px; border: 1px solid #08080a;background-color: #f3d3b3;">
             <button id="send-btn" style="margin-left: 10px; padding: 10px 20px; font-family:'DynaPuff', cursive; font-size: 16px; background-color: #32b5c6; 
                 color: #ffefda; border-radius: 5px; border: 1px solid #08080a; border-radius: 5px; cursor: pointer;">Send</button>
+            <button id="voice-btn" title="Speak" style="margin-left: 10px; padding: 10px; font-family: 'DynaPuff', cursive;
+            font-size: 16px; background-color: #fa8072; color: #ffefda; border-radius: 5px; border: 1px solid #08080a; cursor: pointer;">🎤
+            </button>
         </div>
     </div>
 </div>
@@ -123,6 +126,42 @@ document.addEventListener("keydown", (event) => {
   }
 });
 </script>
+
+<script>
+const voiceBtn = document.getElementById("voice-btn");
+const userInputField = document.getElementById("user-input");
+
+let recognition;
+if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+
+    recognition.onstart = () => {
+        voiceBtn.textContent = "🎙️ Listening...";
+    };
+
+    recognition.onend = () => {
+        voiceBtn.textContent = "🎤";
+    };
+
+    recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        userInputField.value = transcript;
+    };
+} else {
+    voiceBtn.disabled = true;
+    voiceBtn.textContent = "🚫";
+    voiceBtn.title = "Speech recognition not supported in this browser";
+}
+
+voiceBtn.addEventListener("click", () => {
+    if (recognition) recognition.start();
+});
+</script>
+
 
 
 

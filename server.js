@@ -37,39 +37,27 @@ app.get("/chat", (req, res) => {
     res.render("chat", { title: "Chat" });
 });
 
-
 app.post("/chat", async (req, res) => {
-    const userMessage = req.body.message;  // Get user message from the request body
-
+    const userMessage = req.body.message;
+  
     try {
-        // Connect to Gradio client and make a request to the Hugging Face Space API for your model
-        const client = await Client.connect("made1570/TestingModelAPI");
-        const result = await client.predict("/chat", { 
-            message: userMessage, 
-            system_message: "You are a friendly Chatbot.", 
-            max_tokens: 512, 
-            temperature: 0.7, 
-            top_p: 0.95,
-        });
-
-        const botReply = result.data || "No reply."; // Get the response from Gradio model
-        res.json({ reply: botReply });
-
+      // Connect to your HF Space
+      const client = await Client.connect("made1570/TestingModelAPI");
+  
+      // Predict using the Space's `/predict` endpoint
+      const result = await client.predict("/predict", {
+        user_input: userMessage, // Match the input key name used in your Gradio app
+      });
+  
+      // Extract and send the reply
+      const botReply = result.data[0];
+      res.json({ reply: botReply });
+  
     } catch (error) {
-        console.error("Error calling HF API:", error.message);
-
-        if (error.response) {
-            console.error("Status:", error.response.status);
-            console.error("Data:", error.response.data);
-        }
-
-        res.status(500).json({ reply: "Something went wrong calling the model." });
+      console.error("Error using Gradio client:", error.message);
+      res.status(500).json({ reply: "Failed to connect to model." });
     }
-});
-
-app.get("/people", (req, res) => {
-    res.render("people", { title: "Team" });
-});
+  });
 
 // Start Server
 const PORT = process.env.PORT || 3000;
