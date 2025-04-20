@@ -67,7 +67,13 @@ app.get("/", (req, res) => {
 });
 
 app.get("/welcome", (req, res) => {
+    if (!req.user) return res.redirect("/login");
     res.render("welcome", { title: "Welcome", user: req.user  });
+});
+
+app.get("/people", (req, res) => {
+    if (!req.user) return res.redirect("/login");
+    res.render("people", { title: "People", user: req.user  });
 });
 
 app.get("/chat", (req, res) => {
