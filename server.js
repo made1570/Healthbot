@@ -71,9 +71,8 @@ app.get("/welcome", (req, res) => {
     res.render("welcome", { title: "Welcome", user: req.user  });
 });
 
-app.get("/people", (req, res) => {
-    if (!req.user) return res.redirect("/login");
-    res.render("people", { title: "People", user: req.user  });
+app.get("/logout", (req, res) => {
+    req.logout(() => res.redirect("/"));
 });
 
 app.get("/chat", (req, res) => {

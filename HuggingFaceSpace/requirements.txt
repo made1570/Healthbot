@@ -1,0 +1,15 @@
+flask
+torch
+transformers
+accelerate
+bitsandbytes
+auto-gptq
+einops
+peft
+optimum
+sentencepiece
+scipy
+gradio
+safetensors
+unsloth
+vllm
