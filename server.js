@@ -116,6 +116,13 @@ app.get("/logout", (req, res) => {
     req.logout(() => res.redirect("/"));
 });
 
+
+app.post("/uptime",( req, res) => {
+    res.render("login", { title: "Login" });
+    console.log("TESTING UPTIME:");
+    res.status(500).json({ reply: "MORE UPTIME" });
+});
+
 // Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
